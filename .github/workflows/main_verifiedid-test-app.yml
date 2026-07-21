@@ -27,7 +27,7 @@ jobs:
         run: dotnet build ./6-woodgrove-helpdesk/WoodgroveHelpdesk.csproj --configuration Release
         
       - name: dotnet publish
-        run: donet publish ./6-woodgrove-helpdesk/WoodgroveHelpdesk.csproj -c Release -o "${{env.DOTNET_ROOT}}/myapp"
+        run: dotnet publish ./6-woodgrove-helpdesk/WoodgroveHelpdesk.csproj -c Release -o "${{env.DOTNET_ROOT}}/myapp"
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
