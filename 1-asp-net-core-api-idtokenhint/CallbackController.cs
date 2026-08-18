@@ -134,15 +134,28 @@ namespace AspNetCoreVerifiableCredentials
             bool rc = true;
             if (_cache.TryGetValue( state, out string requestState )) {
                 JObject reqState = JObject.Parse(requestState);
+                JToken helpdeskInfo = null;
+                if (reqState.ContainsKey("helpdesk"))
+                {
+                    helpdeskInfo = reqState["helpdesk"];
+                }
                 string requestStatus = reqState["status"].ToString();
                 CallbackEvent callback = null;
                 switch ( requestStatus ) {
                     case "request_created":
-                        result = JObject.FromObject( new { status = requestStatus, message = "Waiting to scan QR code" } );
-                        break;
+                        result = JObject.FromObject(new
+                        {
+                            status = requestStatus,
+                            message = "Waiting to scan QR code",
+                            helpdesk = helpdeskInfo
+                        });
                     case "request_retrieved":
-                        result = JObject.FromObject( new { status = requestStatus, message = "QR code is scanned. Waiting for user action..." } );
-                        break;
+                        result = JObject.FromObject(new
+                        {
+                            status = requestStatus,
+                            message = "QR code is scanned. Waiting for user action...",
+                            helpdesk = helpdeskInfo
+                        });
                     case "issuance_error":
                         callback = JsonConvert.DeserializeObject<CallbackEvent>( reqState["callback"].ToString() );
                         result = JObject.FromObject( new { status = requestStatus, message = "Issuance failed: " + callback.error.message } );
@@ -151,9 +164,12 @@ namespace AspNetCoreVerifiableCredentials
                         result = JObject.FromObject( new { status = requestStatus, message = "Issuance successful" } );
                         break;
                     case "presentation_error":
-                        callback = JsonConvert.DeserializeObject<CallbackEvent>( reqState["callback"].ToString() );                        
-                        result = JObject.FromObject( new { status = requestStatus, message = "Presentation failed:" + callback.error.message } );
-                        break;
+                        result = JObject.FromObject(new
+                        {
+                            status = requestStatus,
+                            message = "Presentation failed:" + callback.error.message,
+                            helpdesk = helpdeskInfo
+                        });
                     case "presentation_verified":
                         callback = JsonConvert.DeserializeObject<CallbackEvent>(reqState["callback"].ToString() );
                         JObject resp = JObject.Parse( JsonConvert.SerializeObject( new {
@@ -166,6 +182,10 @@ namespace AspNetCoreVerifiableCredentials
                                                                                 }, Newtonsoft.Json.Formatting.None, new JsonSerializerSettings {
                                                                                                                 NullValueHandling = NullValueHandling.Ignore
                                                                             } ) );
+                        if (helpdeskInfo != null)
+                        {
+                            resp.Add(new JProperty("helpdesk", helpdeskInfo));
+                        }
                         if (null != callback.receipt && null != callback.receipt.vp_token ) {
                             JObject vpToken = GetJsonFromJwtToken( callback.receipt.vp_token[0] );
                             JObject vc = GetJsonFromJwtToken( vpToken["vp"]["verifiableCredential"][0].ToString() );
