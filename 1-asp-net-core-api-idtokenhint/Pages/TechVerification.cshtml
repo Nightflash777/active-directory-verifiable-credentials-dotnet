@@ -155,10 +155,10 @@
 
                 var photoHtml = "";
             
-                if (data.photo) {
+              if (data.photo) {
                     photoHtml =
                         `<img width="150"
-                              src="data:image/*;base64     .replaceAll(                    .replaceAll("-", "+")}" />`;
+                              src="data:image/*;base64,${decodeURI(ceAll("-", "+")}" />`;
                 }
             
                 document.getElementById("verificationStatus").innerHTML =
