@@ -151,65 +151,53 @@
             
                     const data = await response.json();
             
-              if (data.status === "Verified") {
+         if (data.status === "Verified") {
+    
+        document.getElementById("verificationStatus").innerHTML =
+    
+            `<div style="margin-top:20px;">
+    
+                <div style="font-size:24px;color:green;">
+                    ✅ VERIFIED
+                </div>
+    
+                <br/>
+    
+                <strong>Name:</strong>
+                ${data.verifiedUser || ""}
+    
+                <br/><br/>
+    
+                <strong>Title:</strong>
+                ${data.jobTitle || ""}
+    
+                <br/><br/>
+    
+                <strong>Email:</strong>
+                ${data.email || ""}
+    
+                <br/><br/>
+    
+                <strong>Credential:</strong>
+                ${data.credentialType || ""}
+    
+                <br/><br/>
+    
+                <strong>Expiration:</strong>
+                ${data.expirationDate || ""}
+    
+                <br/><br/>
+    
+                <strong>Issued:</strong>
+                ${data.issuanceDate || ""}
+    
+                <br/><br/>
+    
+                <strong>Verified At:</strong>
+                ${data.verifiedUtc || ""}
 
-                var photoHtml = "";
-            
-              if (data.photo) {
-                    photoHtml =
-                        `<img width="150"
-                              src="data:image/*;base64,${decodeURI(ceAll("-", "+")}" />`;
-                }
-            
-                document.getElementById("verificationStatus").innerHTML =
-            
-                    `<div style="margin-top:20px;">
-            
-                        <div style="font-size:24px;color:green;">
-                            ✅ VERIFIED
-                        </div>
-            
-                        <br/>
-            
-                        ${photoHtml}
-            
-                        <br/>
-            
-                        <strong>Name:</strong>
-                        ${data.verifiedUser || ""}
-            
-                        <br/><br/>
-            
-                        <strong>Title:</strong>
-                        ${data.jobTitle || ""}
-            
-                        <br/><br/>
-            
-                        <strong>Email:</strong>
-                        ${data.email || ""}
-            
-                        <br/><br/>
-            
-                        <strong>Credential:</strong>
-                        ${data.credentialType || ""}
-            
-                        <br/><br/>
-            
-                        <strong>Expiration:</strong>
-                        ${data.expirationDate || ""}
-            
-                        <br/><br/>
-            
-                        <strong>Issued:</strong>
-                        ${data.issuanceDate || ""}
-            
-                        <br/><br/>
-            
-                        <strong>Verified At:</strong>
-                        ${data.verifiedUtc || ""}
-            
-                    </div>`;
-            }
+            </div>`;
+}
                 }
             
                 setInterval(checkVerificationStatus, 3000);
