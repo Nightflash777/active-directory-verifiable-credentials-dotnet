@@ -16,12 +16,24 @@ namespace AspNetCoreVerifiableCredentials.Models
 
         public DateTime CreatedUtc { get; set; }
 
+        public DateTime? VerifiedUtc { get; set; }
+
         public string VerifiedUser { get; set; }
 
         public string Email { get; set; }
 
+        public string JobTitle { get; set; }
+
+        public string Photo { get; set; }
+
         public string CredentialType { get; set; }
 
-        public DateTime? VerifiedUtc { get; set; }
+        public string CredentialState { get; set; }
+
+        public string DomainValidation { get; set; }
+
+        public string ExpirationDate { get; set; }
+
+        public string IssuanceDate { get; set; }
     }
 }
