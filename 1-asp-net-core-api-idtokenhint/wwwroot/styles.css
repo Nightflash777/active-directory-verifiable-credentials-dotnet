@@ -1,24 +1,33 @@
 body {
-    font-family: sans-serif;
-    background-color: #E0E0E0;
+    font-family: 'Inter', sans-serif;
+    background: #f4f6f9;
+    color: #1b1f24;
+    margin: 0;
+    padding: 0;
 }
 #wrap {
+    max-width: 1200px;
     margin: 0 auto;
-    width: 800px;
+    padding: 30px;
 }
 
 .button {
-    background-color: #3B2E58;
+    background: #43306a;
     border: none;
     color: white;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    border-radius: 8px;
+    padding: 14px 24px;
+    border-radius: 12px;
     display: inline-block;
-    font-size: 16px;
-    font-weight: bold;
-  }
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .15s ease;
+}
+
+.button:hover {
+    background: #352454;
+    transform: translateY(-1px);
+}
 
 .dark-purple-fill {
   background-color: #3B2E58;
@@ -121,3 +130,43 @@ table th {
     background-color: #0f0f0f;
     color: white;
 }
+
+input[type="text"] {
+
+    border: 1px solid #d0d5dd;
+
+    border-radius: 10px;
+
+    padding: 10px 12px;
+
+    font-size: 14px;
+
+    transition: .15s ease;
+}
+
+input[type="text"]:focus {
+
+    outline: none;
+
+    border-color: #5d4ce0;
+
+    box-shadow:
+        0 0 0 3px rgba(93,76,224,.15);
+}
+
+.verification-card {
+
+    background: white;
+
+    border-radius: 24px;
+
+    padding: 40px;
+
+    box-shadow:
+        0 20px 60px rgba(0,0,0,.08);
+
+    max-width: 900px;
+
+    margin: 50px auto;
+}
+
