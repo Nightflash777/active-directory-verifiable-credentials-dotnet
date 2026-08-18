@@ -25,4 +25,3 @@ namespace AspNetCoreVerifiableCredentials.Models
         public DateTime? VerifiedUtc { get; set; }
     }
 }
-`
