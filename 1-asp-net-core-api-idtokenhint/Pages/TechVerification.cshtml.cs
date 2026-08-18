@@ -65,9 +65,9 @@ namespace AspNetCoreVerifiableCredentials.Pages
             VerificationUrl =
                 $"{Request.Scheme}://{Request.Host}/verify/{SessionId}";
 
-            Started = true;
+           Started = true;
 
-            return Page();
+           throw new Exception("Reached OnPost");
         }
     }
 }
