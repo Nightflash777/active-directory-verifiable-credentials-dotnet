@@ -67,7 +67,7 @@ namespace AspNetCoreVerifiableCredentials.Pages
 
            Started = true;
 
-           throw new Exception("Reached OnPost");
+           return Page();
         }
     }
 }
