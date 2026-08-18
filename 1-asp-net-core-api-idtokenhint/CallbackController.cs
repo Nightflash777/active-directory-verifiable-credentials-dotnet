@@ -23,6 +23,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
 using Azure.Core;
 using Microsoft.AspNetCore.Http;
+using AspNetCoreVerifiableCredentials.Models;
 
 namespace AspNetCoreVerifiableCredentials
 {
@@ -178,6 +179,35 @@ namespace AspNetCoreVerifiableCredentials
                     break;
                     case "presentation_verified":
                         callback = JsonConvert.DeserializeObject<CallbackEvent>(reqState["callback"].ToString() );
+                        if (_cache.TryGetValue(callback.state, out VerificationSession session))
+                        {
+                            session.Status = "Verified";
+                        
+                            if (callback.verifiedCredentialsData.Count > 0)
+                            {
+                                var claims = callback.verifiedCredentialsData[0].claims;
+                        
+                                if (claims.ContainsKey("displayName"))
+                                {
+                                    session.VerifiedUser = claims["displayName"];
+                                }
+                        
+                                if (claims.ContainsKey("mail"))
+                                {
+                                    session.Email = claims["mail"];
+                                }
+                        
+                                session.CredentialType =
+                                    callback.verifiedCredentialsData[0].type;
+                        
+                                session.VerifiedUtc = DateTime.UtcNow;
+                            }
+                        
+                            _cache.Set(
+                                callback.state,
+                                session,
+                                TimeSpan.FromMinutes(15));
+                        }
                         JObject resp = JObject.Parse( JsonConvert.SerializeObject( new {
                                                                                     status = requestStatus,
                                                                                     message = "Presentation verified",
