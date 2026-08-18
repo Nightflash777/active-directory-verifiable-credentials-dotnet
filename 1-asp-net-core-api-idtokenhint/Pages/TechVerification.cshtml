@@ -105,12 +105,16 @@
 
             <br />
 
-            <div>
-                <h3>Verification Status</h3>
-
-                <div id="verificationStatus">
+           <div>
+               <h3>Verification Status</h3>
+            
+               <div id="verificationStatus">
                     Waiting for customer...
-                </div>
+               </div>
+            
+               <input type="hidden"
+                      id="sessionId"
+                      value="@Model.SessionId" />
             </div>
 
             <br />
@@ -121,17 +125,42 @@
                 Start Another
             </button>
 
-            <script>
+           <script>
                 function copyVerificationUrl() {
                     var textbox = document.getElementById("verificationUrl");
-
+            
                     textbox.select();
                     textbox.setSelectionRange(0, 99999);
-
+            
                     navigator.clipboard.writeText(textbox.value);
-
+            
                     alert("Verification link copied");
                 }
+            
+                async function checkVerificationStatus() {
+            
+                    const sessionId =
+                        document.getElementById("sessionId").value;
+            
+                    const response =
+                        await fetch(`/api/verification-status?id=${sessionId}`);
+            
+                    if (!response.ok) {
+                        return;
+                    }
+            
+                    const data = await response.json();
+            
+                    if (data.status === "Verified") {
+            
+                        document.getElementById("verificationStatus").innerHTML =
+                            "✅ Verified<br/><br/>Verified at: " +
+                            data.verifiedUtc;
+            
+                    }
+                }
+            
+                setInterval(checkVerificationStatus, 3000);
             </script>
         }
     </div>
