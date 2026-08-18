@@ -82,7 +82,12 @@ namespace AspNetCoreVerifiableCredentials
                             acceptedIssuers = tmp.Split( ";", StringSplitOptions.RemoveEmptyEntries );
                         }
                     }
-                    request = CreatePresentationRequest( null, credentialType, acceptedIssuers );
+                    string sessionId = this.Request.Query["sessionId"];
+
+                    request = CreatePresentationRequest(
+                        sessionId,
+                        credentialType,
+                        acceptedIssuers );
                 }
 
                 string faceCheck = this.Request.Query["faceCheck"];
