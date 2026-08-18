@@ -14,25 +14,33 @@
             <div id="message"></div>
             <br />
 
-            <table id="claims">
-                <thead>
-                <th style="width:25%">Claims</th>
-                <th>Value</th>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
+           <div id="verifiedCard" style="display:none">
 
-            <br />
-
-            <table id="vcinfo">
-                <thead>
-                <th style="width:25%">VC Details</th>
-                <th>Value</th>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
+                <br />
+            
+                <div id="verifiedPhoto"></div>
+            
+                <br />
+            
+                <h2 id="verifiedName"></h2>
+            
+                <h3 id="verifiedTitle"></h3>
+            
+                <br />
+            
+                <div style="font-size:24px;color:green;">
+                    Verified
+                </div>
+            
+                <br />
+            
+                <div>
+                    Identity successfully verified.
+                    <br />
+                    Please return to your support technician.
+                </div>
+            
+            </div>
 
             <br />
         </div>
@@ -41,66 +49,29 @@
         <script src="verifiedid.uihandler.js"></script>
 
         <script>
-
-            function addTableRowLabel(tbodyRef, key) {
-                var row = tbodyRef.insertRow(0);
-                (row.insertCell(0)).innerHTML = key;
-                return row;
-            }
-            function addTableRow(tbodyRef, key, value) {
-                var row = addTableRowLabel(tbodyRef, key);
-                (row.insertCell(1)).innerHTML = value;
-            }
-
-            function drawClaimsTable(claims) {
-                if (Object.keys(claims).length > 0) {
-                    var tbodyRef = document.getElementById('claims').getElementsByTagName('tbody')[0];
-                    var idx = 0;
-                    for (idx = Object.keys(claims).length - 1; idx >= 0; idx--) {
-                        var claimName = Object.keys(claims)[idx];
-                        if (claimName == "photo" || claimName == "picture") {
-                            var img = document.createElement('img');
-                            img.width = 100;
-                            img.src = "data:image/*;base64," + decodeURI(claims[Object.keys(claims)[idx]]).replaceAll("_", "/").replaceAll("-", "+");
-                            var row = addTableRowLabel(tbodyRef, claimName);
-                            (row.insertCell(1)).appendChild(img);
-                        } else {
-                            addTableRow(tbodyRef, claimName, claims[Object.keys(claims)[idx]]);
-                        }
-                    }
+            
+            function drawSimpleVerification(claims) {
+            
+                if (claims.photo) {
+            
+                    document.getElementById("verifiedPhoto").innerHTML =
+                        `<img width="150"
+                              src="data:image/*;base64,${decodeURI(claims.photo)
+                                  .replaceAll("_", "/")
+                                  .replaceAll("-", "+")}" />`;
                 }
+            
+                document.getElementById("verifiedName").innerText =
+                    claims.displayName || "";
+            
+                document.getElementById("verifiedTitle").innerText =
+                    claims.jobTitle || "";
+            
+                document.getElementById("verifiedCard").style.display = "block";
             }
-            function drawVcInfoTable(respMsg, payload) {
-                if (Object.keys(payload).length > 0) {
-                    var tbodyRef = document.getElementById('vcinfo').getElementsByTagName('tbody')[0];
-                    var idx = 0;
-                    for (idx = Object.keys(payload).length - 1; idx >= 0; idx--) {
-                        var claimName = Object.keys(payload)[idx];
-                        console.log(claimName);
-                        if (claimName !== "claims") {
-                            if (Object.keys(payload[Object.keys(payload)[idx]]).length > 0) {
-                                addTableRow(tbodyRef, claimName, JSON.stringify(payload[Object.keys(payload)[idx]]))
-                            } else {
-                                addTableRow(tbodyRef, claimName, payload[Object.keys(payload)[idx]])
-                            }
-                        }
-                    }
-                    if (respMsg.jti) {
-                        addTableRow(tbodyRef, "jti", respMsg.jti);
-                    }
-                    var vcSubject = respMsg.subject.split(":");
-                    addTableRow(tbodyRef, "subject", vcSubject[0] + ":" + vcSubject[1] + vcSubject[2] + "...");
-                    if (respMsg.revocationStatus) {
-                        addTableRow(tbodyRef, "revocationStatus", respMsg.revocationStatus);
-                    }
-                    if (respMsg.domainValidation) {
-                        addTableRow(tbodyRef, "domainValidation url", respMsg.domainValidation);
-                    }
-                    if (respMsg.matchConfidenceScore) {
-                        addTableRow(tbodyRef, "faceCheck matchConfidenceScore", respMsg.matchConfidenceScore);
-                    }
-                }
-            }
+            
+
+
             function getPresentationResult(requestId) {
                 fetch(`${requestService.apiPollPresentationRequest}?id=${requestId}`)
                     .then(response => response.text())
@@ -112,8 +83,9 @@
                             if (respMsg.status == 'presentation_verified') {
                                 document.getElementById('vcType').innerText = respMsg.type[1] + " " + respMsg.message;
                                 document.getElementById('message').innerHTML = "";
-                                drawClaimsTable(respMsg.payload[0].claims);
-                                drawVcInfoTable(respMsg, respMsg.payload[0]);
+                                drawSimpleVerification(
+                                    respMsg.payload[0].claims
+                                );
                             }
                         }
                     })
