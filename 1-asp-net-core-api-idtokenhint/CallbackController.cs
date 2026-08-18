@@ -149,6 +149,7 @@ namespace AspNetCoreVerifiableCredentials
                             message = "Waiting to scan QR code",
                             helpdesk = helpdeskInfo
                         });
+                        break;
                     case "request_retrieved":
                         result = JObject.FromObject(new
                         {
@@ -156,6 +157,7 @@ namespace AspNetCoreVerifiableCredentials
                             message = "QR code is scanned. Waiting for user action...",
                             helpdesk = helpdeskInfo
                         });
+                        break;
                     case "issuance_error":
                         callback = JsonConvert.DeserializeObject<CallbackEvent>( reqState["callback"].ToString() );
                         result = JObject.FromObject( new { status = requestStatus, message = "Issuance failed: " + callback.error.message } );
@@ -163,13 +165,17 @@ namespace AspNetCoreVerifiableCredentials
                     case "issuance_successful":
                         result = JObject.FromObject( new { status = requestStatus, message = "Issuance successful" } );
                         break;
-                    case "presentation_error":
-                        result = JObject.FromObject(new
-                        {
-                            status = requestStatus,
-                            message = "Presentation failed:" + callback.error.message,
-                            helpdesk = helpdeskInfo
-                        });
+                   case "presentation_error":
+                    callback = JsonConvert.DeserializeObject<CallbackEvent>(
+                        reqState["callback"].ToString());
+                
+                    result = JObject.FromObject(new
+                    {
+                        status = requestStatus,
+                        message = "Presentation failed:" + callback.error.message,
+                        helpdesk = helpdeskInfo
+                    });
+                    break;
                     case "presentation_verified":
                         callback = JsonConvert.DeserializeObject<CallbackEvent>(reqState["callback"].ToString() );
                         JObject resp = JObject.Parse( JsonConvert.SerializeObject( new {
