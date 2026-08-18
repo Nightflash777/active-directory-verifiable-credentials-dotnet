@@ -8,7 +8,8 @@
 <div id="wrap">
     <div style="text-align:center;">
 
-        <img src="VerifiedCredentialExpert
+        VerifiedCredentialExpert-icon.png
+
         <h1>Helpdesk Identity Verification</h1>
 
         <h2>Verification Request</h2>
@@ -21,8 +22,18 @@
             </p>
 
             <p>
+                <strong>Caller:</strong>
+                @Model.CallerName
+            </p>
+
+            <p>
                 <strong>Reason:</strong>
                 @Model.Reason
+            </p>
+
+            <p>
+                <strong>Status:</strong>
+                @Model.Status
             </p>
 
         </div>
@@ -35,9 +46,6 @@
         </p>
 
         <form method="post">
-
-            <input type="hidden"
-                   asp-for="SessionId" />
 
             <button type="submit"
                     class="button">
