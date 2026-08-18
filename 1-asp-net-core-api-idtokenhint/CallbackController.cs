@@ -179,7 +179,9 @@ namespace AspNetCoreVerifiableCredentials
                     break;
                     case "presentation_verified":
                         callback = JsonConvert.DeserializeObject<CallbackEvent>(reqState["callback"].ToString() );
-                        if (_cache.TryGetValue(callback.state, out VerificationSession session))
+                        if (_cache.TryGetValue(
+                               $"session:{callback.state}",
+                               out VerificationSession session))
                         {
                             session.Status = "Verified";
                         
@@ -203,10 +205,10 @@ namespace AspNetCoreVerifiableCredentials
                                 session.VerifiedUtc = DateTime.UtcNow;
                             }
                         
-                            _cache.Set(
-                                callback.state,
-                                session,
-                                TimeSpan.FromMinutes(15));
+                           _cache.Set(
+                              $"session:{callback.state}",
+                              session,
+                              TimeSpan.FromMinutes(15));
                         }
                         JObject resp = JObject.Parse( JsonConvert.SerializeObject( new {
                                                                                     status = requestStatus,
