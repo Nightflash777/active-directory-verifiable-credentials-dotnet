@@ -187,12 +187,46 @@ namespace AspNetCoreVerifiableCredentials
                         
                             session.VerifiedUtc = DateTime.UtcNow;
                         
+                            JObject claims =
+                                JObject.FromObject(
+                                    callback.verifiedCredentialsData[0].claims);
+                        
+                            session.VerifiedUser =
+                                claims["displayName"]?.ToString();
+                        
+                            session.Email =
+                                claims["mail"]?.ToString();
+                        
+                            session.JobTitle =
+                                claims["jobTitle"]?.ToString();
+                        
+                            session.Photo =
+                                claims["photo"]?.ToString();
+                        
+                            session.CredentialType =
+                                string.Join(",",
+                                    callback.verifiedCredentialsData[0].type);
+                        
+                            if (!string.IsNullOrWhiteSpace(
+                                    callback.verifiedCredentialsData[0].expirationDate))
+                            {
+                                session.ExpirationDate =
+                                    callback.verifiedCredentialsData[0].expirationDate;
+                            }
+                        
+                            if (!string.IsNullOrWhiteSpace(
+                                    callback.verifiedCredentialsData[0].issuanceDate))
+                            {
+                                session.IssuanceDate =
+                                    callback.verifiedCredentialsData[0].issuanceDate;
+                            }
+                        
                             _cache.Set(
                                 $"session:{callback.state}",
                                 session,
                                 TimeSpan.FromMinutes(15));
                         }
-                       
+                                               
                         JObject resp = JObject.Parse( JsonConvert.SerializeObject( new {
                                                                                     status = requestStatus,
                                                                                     message = "Presentation verified",
