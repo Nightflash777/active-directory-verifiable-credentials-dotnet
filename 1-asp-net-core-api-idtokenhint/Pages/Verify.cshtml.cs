@@ -28,7 +28,9 @@ namespace AspNetCoreVerifiableCredentials.Pages
         {
             SessionId = sessionId;
 
-            if (!_cache.TryGetValue(sessionId, out VerificationSession session))
+            if (!_cache.TryGetValue(
+                    $"session:{sessionId}",
+                    out VerificationSession session))
             {
                 return RedirectToPage("/Error");
             }
