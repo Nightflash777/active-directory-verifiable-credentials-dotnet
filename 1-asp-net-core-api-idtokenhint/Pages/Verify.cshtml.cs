@@ -43,7 +43,7 @@ namespace AspNetCoreVerifiableCredentials.Pages
 
         public IActionResult OnPost(string sessionId)
         {
-            return RedirectToPage("/Verifier");
+            return Redirect($"/Verifier?sessionId={sessionId}");
         }
     }
 }
