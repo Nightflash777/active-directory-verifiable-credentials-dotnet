@@ -6,23 +6,24 @@
 
 <div id="wrap">
     <div style="text-align: center;">
-        VerifiedCredentialExpert-icon.png
+        <img src="VerifiedCredentialExpert
         <h1>Helpdesk Identity Verification</h1>
 
         @if (!Model.Started)
         {
             <p>
-                Enter the ticket details below, then start a Verified ID presentation request for the caller.
+                Enter the ticket details below to create a customer verification session.
             </p>
 
             <form method="post" style="display: inline-block; text-align: left; min-width: 420px;">
+
                 <div style="margin-bottom: 15px;">
                     <label for="TicketNumber">Ticket Number</label><br />
                     <input type="text"
                            id="TicketNumber"
                            name="TicketNumber"
                            value="@Model.TicketNumber"
-                           style="width: 100%;"
+                           style="width:100%;"
                            placeholder="INC123456" />
                 </div>
 
@@ -32,7 +33,7 @@
                            id="CallerName"
                            name="CallerName"
                            value="@Model.CallerName"
-                           style="width: 100%;"
+                           style="width:100%;"
                            placeholder="Caller name or username" />
                 </div>
 
@@ -42,59 +43,94 @@
                            id="Reason"
                            name="Reason"
                            value="@Model.Reason"
-                           style="width: 100%;"
+                           style="width:100%;"
                            placeholder="Password reset identity verification" />
                 </div>
 
-                <button type="submit" class="button">Start Verification</button>
-                <button type="button" class="button" onclick="window.location='Index'">Cancel</button>
-            </form>
+                <button type="submit" class="button">
+                    Create Verification Session
+                </button>
 
-            @if (!ViewData.ModelState.IsValid)
-            {
-                <div style="color: red; margin-top: 20px;">
-                    Please enter a ticket number before starting verification.
-                </div>
-            }
+                <button type="button"
+                        class="button"
+                        onclick="window.location='Index'">
+                    Cancel
+                </button>
+
+            </form>
         }
         else
         {
-            <h2>Verification request started</h2>
+            <h2>Verification Session Created</h2>
 
-            <div style="display: inline-block; text-align: left; margin-bottom: 25px;">
-                <p><strong>Ticket Number:</strong> @Model.TicketNumber</p>
-                <p><strong>Caller Name or Username:</strong> @Model.CallerName</p>
-                <p><strong>Reason:</strong> @Model.Reason</p>
+            <div style="display:inline-block;text-align:left;margin-bottom:25px;">
+                <p>
+                    <strong>Ticket Number:</strong>
+                    @Model.TicketNumber
+                </p>
+
+                <p>
+                    <strong>Caller Name or Username:</strong>
+                    @Model.CallerName
+                </p>
+
+                <p>
+                    <strong>Reason:</strong>
+                    @Model.Reason
+                </p>
             </div>
-
-            <div id="message-wrapper" class="margin-bottom-75">
-                <i class="fas fa-user-check green icon-text-large margin-bottom-25"></i>
-                <div id="message">Creating verification request...</div>
-                <br />
-            </div>
-
-            <div id="qrcode" style="text-align:center; display:none;"></div>
 
             <br />
 
-            <button type="button" id="check-result" class="button" style="display:none">Check Result</button>
-            <button type="button" class="button" onclick="window.location='TechVerification'">Start Another</button>
+            <div style="margin:20px;">
 
-            <script src="qrcode.min.js"></script>
-            <script src="verifiedid.requestservice.client.js"></script>
-            <script src="verifiedid.uihandler.js"></script>
+                <h3>Customer Verification Link</h3>
+
+                <input type="text"
+                       id="verificationUrl"
+                       value="@Model.VerificationUrl"
+                       readonly
+                       style="width:600px;" />
+
+                <br /><br />
+
+                <button type="button"
+                        class="button"
+                        onclick="copyVerificationUrl()">
+                    Copy Link
+                </button>
+
+            </div>
+
+            <br />
+
+            <div>
+                <h3>Verification Status</h3>
+
+                <div id="verificationStatus">
+                    Waiting for customer...
+                </div>
+            </div>
+
+            <br />
+
+            <button type="button"
+                    class="button"
+                    onclick="window.location='TechVerification'">
+                Start Another
+            </button>
 
             <script>
-                var qrcode = new QRCode("qrcode", { width: 150, height: 150 });
+                function copyVerificationUrl() {
+                    var textbox = document.getElementById("verificationUrl");
 
-                document.addEventListener('DOMContentLoaded', () => {
-                    requestService.apiCreatePresentationRequest += '?faceCheck=0';
-                    requestService.createPresentationRequest();
-                });
+                    textbox.select();
+                    textbox.setSelectionRange(0, 99999);
 
-                document.getElementById('check-result').addEventListener('click', () => {
-                    requestService.pollRequestStatus(requestService.request.id);
-                });
+                    navigator.clipboard.writeText(textbox.value);
+
+                    alert("Verification link copied");
+                }
             </script>
         }
     </div>
