@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -17,6 +18,10 @@ namespace AspNetCoreVerifiableCredentials.Pages
 
         public bool Started { get; set; }
 
+        public string VerificationUrl { get; set; }
+
+        public string SessionId { get; set; }
+
         public void OnGet()
         {
             Started = false;
@@ -26,8 +31,12 @@ namespace AspNetCoreVerifiableCredentials.Pages
         {
             if (string.IsNullOrWhiteSpace(TicketNumber))
             {
-                ModelState.AddModelError(nameof(TicketNumber), "Ticket number is required.");
+                ModelState.AddModelError(
+                    nameof(TicketNumber),
+                    "Ticket number is required.");
+
                 Started = false;
+
                 return Page();
             }
 
@@ -35,11 +44,29 @@ namespace AspNetCoreVerifiableCredentials.Pages
             CallerName = CallerName?.Trim();
             Reason = Reason?.Trim();
 
-            HttpContext.Session.SetString("Helpdesk:TicketNumber", TicketNumber ?? string.Empty);
-            HttpContext.Session.SetString("Helpdesk:CallerName", CallerName ?? string.Empty);
-            HttpContext.Session.SetString("Helpdesk:Reason", Reason ?? string.Empty);
+            SessionId = Guid.NewGuid().ToString();
+
+            HttpContext.Session.SetString(
+                "Helpdesk:SessionId",
+                SessionId);
+
+            HttpContext.Session.SetString(
+                "Helpdesk:TicketNumber",
+                TicketNumber ?? string.Empty);
+
+            HttpContext.Session.SetString(
+                "Helpdesk:CallerName",
+                CallerName ?? string.Empty);
+
+            HttpContext.Session.SetString(
+                "Helpdesk:Reason",
+                Reason ?? string.Empty);
+
+            VerificationUrl =
+                $"{Request.Scheme}://{Request.Host}/verify/{SessionId}";
 
             Started = true;
+
             return Page();
         }
     }
