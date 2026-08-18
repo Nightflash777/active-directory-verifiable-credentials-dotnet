@@ -64,10 +64,10 @@ namespace AspNetCoreVerifiableCredentials.Pages
                 CreatedUtc = DateTime.UtcNow
             };
 
-            _cache.Set(
-                SessionId,
-                verificationSession,
-                TimeSpan.FromMinutes(15));
+          _cache.Set(
+              $"session:{SessionId}",
+              verificationSession,
+              TimeSpan.FromMinutes(15));
 
             VerificationUrl =
                 $"{Request.Scheme}://{Request.Host}/verify/{SessionId}";
