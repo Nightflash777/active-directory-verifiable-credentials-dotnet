@@ -1,0 +1,50 @@
+@page "/verify/{sessionId}"
+@model AspNetCoreVerifiableCredentials.Pages.VerifyModel
+
+@{
+    ViewData["Title"] = "Identity Verification";
+}
+
+<div id="wrap">
+    <div style="text-align:center;">
+
+        <img src="VerifiedCredentialExpert
+        <h1>Helpdesk Identity Verification</h1>
+
+        <h2>Verification Request</h2>
+
+        <div style="display:inline-block;text-align:left;">
+
+            <p>
+                <strong>Ticket Number:</strong>
+                @Model.TicketNumber
+            </p>
+
+            <p>
+                <strong>Reason:</strong>
+                @Model.Reason
+            </p>
+
+        </div>
+
+        <br />
+        <br />
+
+        <p>
+            Please confirm this matches the request from your support technician.
+        </p>
+
+        <form method="post">
+
+            <input type="hidden"
+                   asp-for="SessionId" />
+
+            <button type="submit"
+                    class="button">
+                Continue
+            </button>
+
+        </form>
+
+    </div>
+</div>
