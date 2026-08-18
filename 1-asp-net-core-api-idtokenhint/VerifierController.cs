@@ -111,14 +111,26 @@ namespace AspNetCoreVerifiableCredentials
                     jsonString = JsonConvert.SerializeObject(requestConfig);
 
                     //We use in memory cache to keep state about the request. The UI will check the state when calling the presentationResponse method
+                    string helpdeskTicketNumber = HttpContext.Session.GetString("Helpdesk:TicketNumber");
+                    string helpdeskCallerName = HttpContext.Session.GetString("Helpdesk:CallerName");
+                    string helpdeskReason = HttpContext.Session.GetString("Helpdesk:Reason");
+                    
                     var cacheData = new
                     {
                         status = "request_created",
                         message = "Waiting for QR code to be scanned",
-                        expiry = requestConfig["expiry"].ToString()
+                        expiry = requestConfig["expiry"].ToString(),
+                        helpdesk = new
+                        {
+                            ticketNumber = helpdeskTicketNumber,
+                            callerName = helpdeskCallerName,
+                            reason = helpdeskReason,
+                            createdDateTimeUtc = DateTime.UtcNow.ToString("o")
+                        }
                     };
-                    _cache.Set(request.callback.state, JsonConvert.SerializeObject(cacheData)
-                                    , DateTimeOffset.Now.AddSeconds( _configuration.GetValue<int>( "AppSettings:CacheExpiresInSeconds", 300 ) ) );
+                    
+                    _cache.Set(request.callback.state, JsonConvert.SerializeObject(cacheData),
+                        DateTimeOffset.Now.AddSeconds(_configuration.GetValue<int>("AppSettings:CacheExpiresInSeconds", 300)));
                     //the response from the VC Request API call is returned to the caller (the UI). It contains the URI to the request which Authenticator can download after
                     //it has scanned the QR code. If the payload requested the VC Request service to create the QR code that is returned as well
                     //the javascript in the UI will use that QR code to display it on the screen to the user.
