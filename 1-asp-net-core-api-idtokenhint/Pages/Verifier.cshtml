@@ -85,6 +85,14 @@
                         qp += "&claim=" + claimName + "&op=" + constraintOp + "&value=" + claimValue;
                     }
                 }
+              const urlParams = new URLSearchParams(window.location.search);
+              const urlParams = new URLSearchParams(window.location.search);
+              const sessionId = urlParams.get("sessionId");
+                
+              if (sessionId) {
+                  qp += "&sessionId=" + sessionId;
+                }
+                
                 requestService.apiCreatePresentationRequest += qp;
                 requestService.createPresentationRequest();
                 document.getElementById('useConstraints').style.display = "none";
