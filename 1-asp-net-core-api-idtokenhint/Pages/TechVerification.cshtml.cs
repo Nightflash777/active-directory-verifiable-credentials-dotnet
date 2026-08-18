@@ -1,12 +1,20 @@
 using System;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Caching.Memory;
+using AspNetCoreVerifiableCredentials.Models;
 
 namespace AspNetCoreVerifiableCredentials.Pages
 {
     public class TechVerificationModel : PageModel
     {
+        private readonly IMemoryCache _cache;
+
+        public TechVerificationModel(IMemoryCache cache)
+        {
+            _cache = cache;
+        }
+
         [BindProperty]
         public string TicketNumber { get; set; }
 
@@ -46,28 +54,27 @@ namespace AspNetCoreVerifiableCredentials.Pages
 
             SessionId = Guid.NewGuid().ToString();
 
-            HttpContext.Session.SetString(
-                "Helpdesk:SessionId",
-                SessionId);
+            var verificationSession = new VerificationSession
+            {
+                SessionId = SessionId,
+                TicketNumber = TicketNumber,
+                CallerName = CallerName,
+                Reason = Reason,
+                Status = "Pending",
+                CreatedUtc = DateTime.UtcNow
+            };
 
-            HttpContext.Session.SetString(
-                "Helpdesk:TicketNumber",
-                TicketNumber ?? string.Empty);
-
-            HttpContext.Session.SetString(
-                "Helpdesk:CallerName",
-                CallerName ?? string.Empty);
-
-            HttpContext.Session.SetString(
-                "Helpdesk:Reason",
-                Reason ?? string.Empty);
+            _cache.Set(
+                SessionId,
+                verificationSession,
+                TimeSpan.FromMinutes(15));
 
             VerificationUrl =
                 $"{Request.Scheme}://{Request.Host}/verify/{SessionId}";
 
-           Started = true;
+            Started = true;
 
-           return Page();
+            return Page();
         }
     }
 }
