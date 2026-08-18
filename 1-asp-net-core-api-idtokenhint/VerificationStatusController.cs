@@ -36,14 +36,22 @@ namespace AspNetCoreVerifiableCredentials
                 });
             }
 
-            return new JsonResult(new
-            {
+          return new JsonResult(new
+          {
                 session.SessionId,
-                session.TicketNumber,
-                session.CallerName,
-                session.Reason,
                 session.Status,
-                session.VerifiedUtc
+                session.VerifiedUtc,
+            
+                session.VerifiedUser,
+                session.Email,
+                session.JobTitle,
+                session.Photo,
+            
+                session.CredentialType,
+                session.CredentialState,
+                session.DomainValidation,
+                session.ExpirationDate,
+                session.IssuanceDate
             });
         }
     }
