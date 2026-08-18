@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Caching.Memory;
@@ -5,45 +6,75 @@ using AspNetCoreVerifiableCredentials.Models;
 
 namespace AspNetCoreVerifiableCredentials.Pages
 {
-    public class VerifyModel : PageModel
+    public class TechVerificationModel : PageModel
     {
         private readonly IMemoryCache _cache;
 
-        public VerifyModel(IMemoryCache cache)
+        public TechVerificationModel(IMemoryCache cache)
         {
             _cache = cache;
         }
 
-        public string SessionId { get; set; }
-
+        [BindProperty]
         public string TicketNumber { get; set; }
 
+        [BindProperty]
         public string CallerName { get; set; }
 
+        [BindProperty]
         public string Reason { get; set; }
 
-        public string Status { get; set; }
+        public bool Started { get; set; }
 
-        public IActionResult OnGet(string sessionId)
+        public string VerificationUrl { get; set; }
+
+        public string SessionId { get; set; }
+
+        public void OnGet()
         {
-            SessionId = sessionId;
-
-            if (!_cache.TryGetValue(sessionId, out VerificationSession session))
-            {
-                return RedirectToPage("/Error");
-            }
-
-            TicketNumber = session.TicketNumber;
-            CallerName = session.CallerName;
-            Reason = session.Reason;
-            Status = session.Status;
-
-            return Page();
+            Started = false;
         }
 
-        public IActionResult OnPost(string sessionId)
+        public IActionResult OnPost()
         {
-            return RedirectToPage("/Verifier");
+            if (string.IsNullOrWhiteSpace(TicketNumber))
+            {
+                ModelState.AddModelError(
+                    nameof(TicketNumber),
+                    "Ticket number is required.");
+
+                Started = false;
+
+                return Page();
+            }
+
+            TicketNumber = TicketNumber?.Trim();
+            CallerName = CallerName?.Trim();
+            Reason = Reason?.Trim();
+
+            SessionId = Guid.NewGuid().ToString();
+
+            var verificationSession = new VerificationSession
+            {
+                SessionId = SessionId,
+                TicketNumber = TicketNumber,
+                CallerName = CallerName,
+                Reason = Reason,
+                Status = "Pending",
+                CreatedUtc = DateTime.UtcNow
+            };
+
+            _cache.Set(
+                SessionId,
+                verificationSession,
+                TimeSpan.FromMinutes(15));
+
+            VerificationUrl =
+                $"{Request.Scheme}://{Request.Host}/verify/{SessionId}";
+
+            Started = true;
+
+            return Page();
         }
     }
 }
